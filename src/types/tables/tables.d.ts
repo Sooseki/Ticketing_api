@@ -1,1 +1,1 @@
-export type DbTable = 'user';  
+export type DbTable = 'user' | 'ticket' | 'message' | 'user_ticket' | 'satisfaction';  
