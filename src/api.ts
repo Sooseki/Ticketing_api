@@ -1,15 +1,20 @@
 import cors from 'cors'
-import express, { json, Router } from 'express'
+import express, { json } from 'express'
 import { Log } from './classes/Logging/Log'
 import { DefaultErrorHandler } from './middlewares/error-handler'
+import { TICKET_ROUTES } from './routes/ticket/TicketController'
 import { USER_ROUTES } from './routes/user/UserController'
+import { MESSAGE_ROUTES } from './routes/message/MessageController'
+import { CHAT_ROUTES } from './routes/chat/ChatController'
+import expressWs from 'express-ws'
+import { USER_TICKET_ROUTES } from './routes/userTicket/UserTicketController'
 
 const PORT = process.env.PORT || 8080;
 
 /**
  * On créé une nouvelle "application" express
  */
-const app = express()
+const app = expressWs(express()).app
 
 /**
  * On dit à Express que l'on souhaite parser le body des requêtes en JSON
@@ -27,14 +32,13 @@ app.use(cors())
 /**
  * Toutes les routes CRUD pour les animaux seronts préfixées par `/pets`
  */
-// const user_routes = Router()
-// user_routes.use(USER_ROUTES)
-
 app.use('/user', USER_ROUTES)
+app.use('/ticket', TICKET_ROUTES)
+app.use('/ticket-user', USER_TICKET_ROUTES)
+app.use('/chat', CHAT_ROUTES)
 
 /**
  * Gestion des erreurs
- * /!\ Cela doit être le dernier `app.use`
  */
 app.use(DefaultErrorHandler)
 

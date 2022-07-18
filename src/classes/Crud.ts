@@ -1,13 +1,12 @@
-import { ValidateFunction } from 'ajv';
-import { OkPacket, RowDataPacket } from 'mysql2';
-import { ICreateResponse } from '../types/api/ICreateResponse';
-import { IIndexQuery, IIndexResponse, IReadWhere } from '../types/api/IIndexQuery';
-import { ITableCount } from '../types/api/ITableCount';
-import { IUpdateResponse } from '../types/api/IUpdateResponse';
-import { DbTable } from '../types/tables/tables';
-import { DB } from './DB';
-import { ApiError } from './Errors/ApiError';
-import { ErrorCode } from './Errors/ErrorCode';
+import { OkPacket, RowDataPacket } from 'mysql2'
+import { ICreateResponse } from '../types/api/ICreateResponse'
+import { IIndexQuery, IIndexResponse, IReadWhere } from '../types/api/IIndexQuery'
+import { ITableCount } from '../types/api/ITableCount'
+import { IUpdateResponse } from '../types/api/IUpdateResponse'
+import { DbTable } from '../types/tables/tables'
+import { DB } from './DB'
+import { ApiError } from './Errors/ApiError'
+import { ErrorCode } from './Errors/ErrorCode'
 
 /**
  * Crud Operations available in this class
@@ -34,16 +33,29 @@ export class Crud {
     where?: IReadWhere): Promise<IIndexResponse<T>> 
   {
 
-    const db = DB.Connection;
+    const db = DB.Connection
 
     // Page is the nth page of this request consulted by user 
-    const page = Math.max(query.page || 0, 0);
+    const page = Math.max(query.page || 0, 0)
 
     // Make default limit for the query
-    const limit = Math.min(query.limit || 0, 50) || 30;
-    const offset = page * limit;
+    const limit = Math.min(query.limit || 0, 50) || 30
+    const offset = page * limit
 
-    const whereClause = (where ? `where ?` : '');
+    let whereClause = (where ? `where ` : '')
+    let whereParams: Array<number|string> = []
+    let allParams: Array<number|string> = []
+
+    if (where) {
+      for (let n = 0; n < where[0].length; n ++) {
+        whereParams.push(where[1][n])
+        allParams.push(where[1][n])
+        whereClause += where[0][n + 1] ? where[0][n] + ' = ? && ' : where[0][n] + ' = ? '
+      }
+    }
+
+    allParams.push(limit)
+    allParams.push(offset)
 
     let join = '';
     if (joinTables && joinTablesColumns && joinTables.length == joinTablesColumns.length) {
@@ -54,11 +66,11 @@ export class Crud {
       }
     }
 
-    const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause}`, [where]);
+    const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause}`, whereParams)
 
-    const sqlBase = `select ${columns.join(',')} from ${table} ${join} ${whereClause} limit ? offset ?`;
+    const sqlBase = `select ${columns.join(',')} from ${table} ${join} ${whereClause} limit ? offset ?`
    
-    const data = await db.query<T[] & RowDataPacket[]>(sqlBase, [where, limit, offset].filter(e => e !== undefined));
+    const data = await db.query<T[] & RowDataPacket[]>(sqlBase, allParams.filter(e => e !== undefined))
    
     const res: IIndexResponse<T> = {
       page,
@@ -78,24 +90,20 @@ export class Crud {
    * @returns {ICreateResponse}  
    */
   public static async Create<T>(body: T, table: DbTable): Promise<ICreateResponse> {
-    const db = DB.Connection;
-    const data = await db.query<OkPacket>(`insert into ${table} set ?`, body);
+    const db = DB.Connection
+    const data = await db.query<OkPacket>(`insert into ${table} set ?`, body)
     return {
       id: data[0].insertId
     }
   }
 
-  public static async Update<T>(body: T, table: DbTable, idName: string, idValue: number, validator?: ValidateFunction<T>): Promise<IUpdateResponse> {
-    if (!validator || validator(body)) {
-      const db = DB.Connection;
+  public static async Update<T>(body: T, table: DbTable, idName: string, idValue: number): Promise<IUpdateResponse> {
+    const db = DB.Connection
 
-      const data = await db.query<OkPacket>(`update ${table} set ? where ${idName} = ?`, [body, idValue]);
+    const data = await db.query<OkPacket>(`update ${table} set ? where ${idName} = ?`, [body, idValue])
 
-      return {
-        rows: data[0].affectedRows
-      }
-    } else {
-      throw new ApiError(ErrorCode.BadRequest, 'validation/failed', 'Data did not pass validation', validator.errors);
+    return {
+      rows: data[0].affectedRows
     }
   }
 
@@ -106,9 +114,9 @@ export class Crud {
     columns: string[],
     joinTables: string[][] | null = null,
     joinTablesColumns: string[][] | null = null): Promise<T> {
-    const db = DB.Connection;
+    const db = DB.Connection
 
-    let join = '';
+    let join = ''
     if (joinTables && joinTablesColumns && joinTables.length == joinTablesColumns.length) {
 
       for (let i = 0; i < joinTables.length; i++) {
@@ -120,18 +128,18 @@ export class Crud {
     const data =
       await db.query<
         T[] & RowDataPacket[]
-      >(`select ${columns.join(',')} from ${table} ${join} where ${idName} = ?`, [idValue]);
+      >(`select ${columns.join(',')} from ${table} ${join} where ${idName} = ?`, [idValue])
 
     if (data[0].length > 0) {
-      return data[0][0];
+      return data[0][0]
     } else {
-      throw new ApiError(ErrorCode.BadRequest, 'sql/not-found', `Could not read row with ${idName} = ${idValue}`);
+      throw new ApiError(ErrorCode.BadRequest, 'sql/not-found', `Could not read row with ${idName} = ${idValue}`)
     }
   }
 
   public static async Delete(table: DbTable, idName: string, idValue: number): Promise<IUpdateResponse> {
-    const db = DB.Connection;
-    const data = await db.query<OkPacket>(`delete from ${table} where ${idName} = ?`, [idValue]);
+    const db = DB.Connection
+    const data = await db.query<OkPacket>(`delete from ${table} where ${idName} = ?`, [idValue])
 
     return {
       rows: data[0].affectedRows
