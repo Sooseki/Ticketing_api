@@ -42,11 +42,11 @@ export class Crud {
     const limit = Math.min(query.limit || 0, 50) || 30
     const offset = page * limit
 
-    let whereClause = (where ? `where ` : '')
+    let whereClause = (where && where.length !== 0 ? `where ` : '')
     let whereParams: Array<number|string> = []
     let allParams: Array<number|string> = []
 
-    if (where) {
+    if (where && where.length !== 0) {
       for (let n = 0; n < where[0].length; n ++) {
         whereParams.push(where[1][n])
         allParams.push(where[1][n])
@@ -65,6 +65,8 @@ export class Crud {
 
       }
     }
+
+    console.log(`select count(*) as total from ${table} ${join} ${whereClause}`)
 
     const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause}`, whereParams)
 

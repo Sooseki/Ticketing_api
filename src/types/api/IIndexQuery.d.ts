@@ -3,7 +3,7 @@ export interface IIndexQuery {
   limit?: number; 
 }
 
-export type IReadWhere = (string[] | number[])[];
+export type IReadWhere = Array<string|number>[];
 
 export interface IIndexResponse<T> {
   page: number;

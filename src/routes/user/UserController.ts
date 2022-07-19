@@ -47,7 +47,7 @@ router.get<{ id: number }, IUser, {}, {}>('/:id',
 router.post<{}, ICreateJWTResponse, IUserCreate, {}>('/register',
   async (request, response, next) => {
     try {
-      const where = [['email'], [request.body.email]]
+      const where: Array<string|number>[] = [['email'], [request.body.email]]
       const checkIfExists = await Crud.Index<IUser>({page: 0, limit: 1}, 'user', ['id'], null, null, where)
 
       if(checkIfExists.rows.length === 0) {
@@ -77,7 +77,7 @@ router.post<{}, ICreateJWTResponse, IUserCreate, {}>('/register',
 router.post<{}, ICreateJWTResponse, IUserCreate, {}>('/login',
   async (request, response, next) => {
     try {
-      const where = [
+      const where: Array<string|number>[] = [
         ['email', 'password'], 
         [request.body.email, request.body.password]
       ]

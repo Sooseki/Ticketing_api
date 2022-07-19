@@ -2,7 +2,8 @@ import { Router } from "express"
 import {  ICreateResponse } from "~/types/api/ICreateResponse"
 import { Crud } from "../../classes/Crud"
 import { authentication } from "../../auth/authentication"
-import { IUserTicketCreate } from "../../types/tables/userTicket/IUserTicket"
+import { IUserTicketCreate, IUserTicketUpdate } from "../../types/tables/userTicket/IUserTicket"
+import { IUpdateResponse } from "~/types/api/IUpdateResponse"
 
 const router = Router()
 
@@ -14,7 +15,7 @@ router.post<{}, ICreateResponse, IUserTicketCreate, {}>('/:id',
       try {
 
         const query = await Crud.Create<IUserTicketCreate>(request.body, 'user_ticket')
-        const updateTicket = await Crud.Update<{}>({'status': 1}, 'ticket', 'id', request.body.ticket_id)
+        await Crud.Update<{}>({'status': 1}, 'ticket', 'id', request.body.ticket_id)
         response.json(query)
     
       } catch (err) {
@@ -24,6 +25,26 @@ router.post<{}, ICreateResponse, IUserTicketCreate, {}>('/:id',
       next(new Error('Authentication failed'))
     } 
 
+  }
+)
+
+router.put<{id: number}, IUpdateResponse, IUserTicketUpdate, {}>('/close/:id',
+  async (request, response, next) => {
+
+    try {
+      console.log(request.headers)
+      await authentication(request) 
+
+      try {
+        const query = await Crud.Update<{}>({'status': 2}, 'ticket', 'id', request.params.id)
+        response.json(query)
+    
+      } catch (err) {
+        next(err)
+      }
+    } catch (err) {
+      next(new Error('Authentication failed'))
+    }
   }
 )
 

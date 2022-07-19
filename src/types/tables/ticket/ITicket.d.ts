@@ -19,11 +19,6 @@ export type ITicketCreate = Omit<ITicket, 'id'|'closing_date'|'description'>;
 export interface ITicketIndexQuery {
   page?: number;
   limit?: number; 
-  status: string;
-}
-
-export interface ITicketActiveQuery {
-  page?: number;
-  limit?: number; 
-  user_id: string;
+  user_id?: string; 
+  status?: string;
 }

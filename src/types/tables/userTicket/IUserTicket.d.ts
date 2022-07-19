@@ -5,3 +5,4 @@ export interface IUserTicket {
 }
 
 export type IUserTicketCreate = Omit<IUserTicket, 'id'>
+export type IUserTicketUpdate = Omit<IUserTicket, 'id'|'user_id'>
