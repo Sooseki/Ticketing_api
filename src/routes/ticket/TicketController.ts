@@ -18,17 +18,17 @@ router.get<{}, IIndexResponse<ITicket>, {}, ITicketIndexQuery>('/waiting',
     if(authVerified) {   
       try {
        
-        const whereTables: Array<string|number> = []
         const whereCols: Array<string|number> = []
+        const whereValues: Array<string|number> = []
         const where: IReadWhere = []
 
         if (request.query.status) {
-          whereTables.push('status')
-          whereCols.push(parseInt(request.query.status))
+          whereCols.push('status')
+          whereValues.push(parseInt(request.query.status))
         }
 
-        if (whereTables.length !== 0 && whereCols.length !== 0) {
-          where.push(whereTables, whereCols)
+        if (whereCols.length !== 0 && whereValues.length !== 0) {
+          where.push(whereCols, whereValues)
         }
 
         const query = await Crud.Index<ITicket>(
@@ -58,27 +58,27 @@ router.get<{}, IIndexResponse<ITicket>, {}, ITicketIndexQuery>('/active',
     if(authVerified) {   
       try {
 
-        const whereTables: Array<string|number> = []
         const whereCols: Array<string|number> = []
+        const whereValues: Array<string|number> = []
         const where: IReadWhere = []
 
         if (request.query.status) {
-          whereTables.push('status')
-          whereCols.push(parseInt(request.query.status))
+          whereCols.push('status')
+          whereValues.push(parseInt(request.query.status))
         }
 
         const joinTables = []
         const joinColumns = []
 
         if (request.query.user_id) {
-          whereTables.push('user_ticket.user_id')
-          whereCols.push(parseInt(request.query.user_id))
+          whereCols.push('user_ticket.user_id')
+          whereValues.push(parseInt(request.query.user_id))
           joinTables.push(['user_ticket', 'ticket'])
           joinColumns.push(['ticket_id', 'id'])
         }
 
-        if (whereTables.length !== 0 && whereCols.length !== 0) {
-          where.push(whereTables, whereCols)
+        if (whereCols.length !== 0 && whereValues.length !== 0) {
+          where.push(whereCols, whereValues)
         }
 
         const query = await Crud.Index<ITicket>(
@@ -136,7 +136,8 @@ router.post<{}, ICreateResponse, ITicketCreateAll, {}>('/',
         const mesageBody = {
           text: request.body.theme,
           date: ticketBody.opening_date,
-          ticket_id: query.id
+          ticket_id: query.id,
+          user_id: request.body.user_id
         }
 
         const userBody = {

@@ -36,6 +36,7 @@ app.use('/user', USER_ROUTES)
 app.use('/ticket', TICKET_ROUTES)
 app.use('/ticket-user', USER_TICKET_ROUTES)
 app.use('/chat', CHAT_ROUTES)
+app.use('/message', MESSAGE_ROUTES)
 
 /**
  * Gestion des erreurs

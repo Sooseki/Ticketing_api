@@ -3,6 +3,7 @@ export interface IMessage {
   'text': string;
   'date': Date;
   'ticket_id': number;
+  'user_id': number;
 }
 
 export type IMessageCreate = Omit<IMessage, 'id'>;

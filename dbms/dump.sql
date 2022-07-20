@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: ticket_app
 -- ------------------------------------------------------
--- Server version       10.6.5-MariaDB-1:10.6.5+maria~focal
+-- Server version	10.6.5-MariaDB-1:10.6.5+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,10 +29,11 @@ CREATE TABLE `message` (
   `text` text DEFAULT NULL,
   `date` date NOT NULL,
   `ticket_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_ticket` (`ticket_id`),
   CONSTRAINT `message_ibfk_2` FOREIGN KEY (`ticket_id`) REFERENCES `ticket` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +42,7 @@ CREATE TABLE `message` (
 
 LOCK TABLES `message` WRITE;
 /*!40000 ALTER TABLE `message` DISABLE KEYS */;
-INSERT INTO `message` VALUES (25,'New request 2','2022-07-19',37),(26,'new Request 3','2022-07-19',37),(27,'new request 4','2022-07-19',37),(28,'new request','2022-07-19',40),(29,'new message for the request','2022-07-19',40),(30,'Bonjour','2022-07-20',40);
+INSERT INTO `message` VALUES (36,'I have a request !','2022-07-20',42,37),(37,'Hello i have a request !','2022-07-20',42,37),(38,'Coul you take care of it ?','2022-07-20',42,37),(39,'Hello Clément, what is your request ?','2022-07-20',42,1),(40,'My microwave doesnt work anymore !','2022-07-20',42,37),(41,'No way ...','2022-07-20',42,1),(42,'New request again and again','2022-07-20',43,38),(43,'New ticket ?','2022-07-20',44,38);
 /*!40000 ALTER TABLE `message` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +88,7 @@ CREATE TABLE `ticket` (
   `description` text DEFAULT NULL,
   `theme` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +97,7 @@ CREATE TABLE `ticket` (
 
 LOCK TABLES `ticket` WRITE;
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
-INSERT INTO `ticket` VALUES (37,'2022-07-19',NULL,0,NULL,'New request 2'),(40,'2022-07-19',NULL,1,NULL,'new request');
+INSERT INTO `ticket` VALUES (37,'2022-07-19',NULL,0,NULL,'New request 2'),(40,'2022-07-19',NULL,1,NULL,'new request'),(41,'2022-07-20',NULL,0,NULL,'request for chating'),(42,'2022-07-20',NULL,0,NULL,'I have a request !'),(43,'2022-07-20',NULL,0,NULL,'New request again and again'),(44,'2022-07-20',NULL,0,NULL,'New ticket ?');
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +116,7 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `role` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,7 +125,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Manon','Bonnet','bonnet.manon.30@gmail.com','temporaryClearPass',1),(36,'Nicolas','Everping','email@gmail.com','password',1);
+INSERT INTO `user` VALUES (1,'Manon','Bonnet','bonnet.manon.30@gmail.com','temporaryClearPass',1),(36,'Nicolas','Everping','email@gmail.com','password',1),(37,'Clement','Hutteau','clement@hutteau','password',0),(38,'user','name','user@mail','$2b$10$nUEKhi..efehoYKPbNQNfudzjEwWNrdY6.IRXgyn4cjwYsuOazfdC',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,7 +145,7 @@ CREATE TABLE `user_ticket` (
   KEY `ticket_id` (`ticket_id`),
   CONSTRAINT `user_ticket_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_ticket_ibfk_2` FOREIGN KEY (`ticket_id`) REFERENCES `ticket` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +154,7 @@ CREATE TABLE `user_ticket` (
 
 LOCK TABLES `user_ticket` WRITE;
 /*!40000 ALTER TABLE `user_ticket` DISABLE KEYS */;
-INSERT INTO `user_ticket` VALUES (22,1,40);
+INSERT INTO `user_ticket` VALUES (22,1,40),(23,37,41),(24,37,42),(25,38,43),(26,38,44);
 /*!40000 ALTER TABLE `user_ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -166,4 +167,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-20 18:07:52
+-- Dump completed on 2022-07-20 22:33:38

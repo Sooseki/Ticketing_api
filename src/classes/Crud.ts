@@ -30,7 +30,8 @@ export class Crud {
     columns: string[], 
     joinTables: string[][] | null = null,
     joinTablesColumns: string[][] | null = null, 
-    where?: IReadWhere): Promise<IIndexResponse<T>> 
+    where?: IReadWhere,
+    order?: string): Promise<IIndexResponse<T>> 
   {
 
     const db = DB.Connection
@@ -66,9 +67,11 @@ export class Crud {
       }
     }
 
-    const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause}`, whereParams)
+    let orderClause = (order ? `order by ` + order : '')
 
-    const sqlBase = `select ${columns.join(',')} from ${table} ${join} ${whereClause} limit ? offset ?`
+    const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause} ${orderClause}`, whereParams)
+
+    const sqlBase = `select ${columns.join(',')} from ${table} ${join} ${whereClause} ${orderClause} limit ? offset ?`
    
     const data = await db.query<T[] & RowDataPacket[]>(sqlBase, allParams.filter(e => e !== undefined))
    

@@ -1,42 +1,57 @@
 import { authentication } from "../../auth/authentication"
 import express from 'express'
-import expressWs from 'express-ws'
-import { Crud } from "~/classes/Crud"
-import { IMessage, IMessageCreate } from "~/types/tables/message/IMessage"
-import { json } from "stream/consumers"
+import WebSocket from 'ws'
+import { Crud } from "../../classes/Crud"
+import { IMessageCreate } from "../../types/tables/message/IMessage"
 
-const router = expressWs(express()).app
-const aWss = expressWs(express()).getWss()
+var expressWs = require('express-ws');
+var expressWss = expressWs(express());
+var router = expressWss.app;
 
-router.ws('/:id',
-  async (ws, request, next) => {
+const clients: any = new Set()
+
+router.ws('/',
+  async (ws: any, request: any, next: any) => {
     // const authVerified = await authentication(request)
     const authVerified = true
     
     if(authVerified) {  
 
       try {
+        // clients.add(ws)
+        // console.log(clients.size)
+        
         ws.on('message', async (msg: any) => {
-          // console.log('aWss : ', aWss)
-          // console.log('clients : ', aWss.clients)
 
           msg = JSON.parse(msg)
           const message: IMessageCreate = {
             'text': msg.message,
             'ticket_id': msg.ticket_id,
-            'date': new Date()
+            'date': new Date(),
+            'user_id': msg.user_id
           }
 
           await Crud.Create<IMessageCreate>(message, 'message')
 
           // WS part does not word for now
           // --------------------------------------------------------------
-          aWss.clients.forEach((client) => {
-            console.log('client : ' + client)
-            console.log('msg : ' + msg)
-            client.send(msg)
+          clients.forEach((client: any) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              // client.send(msg);
+            }
+            // console.log('client : ' + client)
+            // console.log('msg : ' + msg)
           })
           // --------------------------------------------------------------
+
+          // Array.from(
+          //   clients
+          // ).filter((sock: any)=>{
+          //   return sock.route == '/' + request.params.ticket /* <- Your path */
+          // }).forEach(function (client: any) {
+          //   client.send(msg.data);
+          //   console.log(client)
+          // });
 
         })
       } catch (err) {
