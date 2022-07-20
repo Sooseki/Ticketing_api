@@ -66,8 +66,6 @@ export class Crud {
       }
     }
 
-    console.log(`select count(*) as total from ${table} ${join} ${whereClause}`)
-
     const count = await db.query<ITableCount[] & RowDataPacket[]>(`select count(*) as total from ${table} ${join} ${whereClause}`, whereParams)
 
     const sqlBase = `select ${columns.join(',')} from ${table} ${join} ${whereClause} limit ? offset ?`

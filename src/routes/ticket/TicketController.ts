@@ -31,8 +31,6 @@ router.get<{}, IIndexResponse<ITicket>, {}, ITicketIndexQuery>('/waiting',
           where.push(whereTables, whereCols)
         }
 
-        console.log(where)
-
         const query = await Crud.Index<ITicket>(
           request.query, 
           'ticket', 

@@ -8,3 +8,6 @@ RUN \
   npm install -g typescript && \
   npm install -g ts-node
 WORKDIR /server
+
+FROM mariadb:latest
+COPY dbms/dump.sql docker-entrypoint-initdb.d/initdb.sql
